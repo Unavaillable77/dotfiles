@@ -4,6 +4,7 @@ alias wttr='curl wttr.in/'
 alias dotfiles='cd ~/.dotfiles'
 alias grep='grep --color=auto'
 alias ll='clear; eza -lh'
+alias l='ls -lshat'
 alias zrc='micro ~/.zshrc'
 alias nano='micro'
 
