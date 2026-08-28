@@ -3,7 +3,9 @@
 alias wttr='curl wttr.in/'
 alias dotfiles='cd ~/.dotfiles'
 alias grep='grep --color=auto'
-alias ll='eza -lh'
+alias ll='clear; eza -lh'
+alias zrc='micro ~/.zshrc'
+alias nano='micro'
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"

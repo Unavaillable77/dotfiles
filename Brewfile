@@ -1,50 +1,45 @@
-# Binaries
-brew 'zsh' # zsh (latest)
-brew 'wget' # file downloader
-brew 'htop' # a colorful top alternative
-brew 'btop' # modern resource monitor (TUI)
-brew 'httpie' # http client
-brew 'jq' # work with JSON files in shell scripts
-brew 'jless' # cli JSON viewer
-brew 'git-delta' # syntax-highlighting pager for git diffs
-brew 'git-absorb' # absorb staged changes in current branch
-brew 'stow' # symlink manager
-brew 'tldr' # better than help
-brew 'bat' # better cat
-brew 'bat-extras' # various cli tools integrate with bat
-brew 'fzf' # fuzzy file searcher, used in scripts and in vim
-brew 'fd' # fast find
-brew 'eza' # ls alternative
-brew 'tree' # pretty-print directory contents
-brew 'vim' # vim (latest)
-brew 'watch' # execute a program periodically
-brew 'zoxide' # switch between most used directories
-brew 'starship' # cross-shell prompt
-brew 'git' # git version control (latest version)
-brew 'gnupg' # tool for managing pgp keys
-brew 'pinentry-mac' # tool that allow GnuPG to read passphrases
-#brew 'rust' # rust (latest)
-brew 'pyenv' # tool for Python version management
-brew 'pyenv-virtualenv' # pyenv plugin to manage virtualenv
-brew 'fastfetch' # system info script
-brew 'tmux' # terminal multiplexer
-brew 'lazygit' # TUI for git commands
-brew 'lazydocker' # TUI for docker and docker-compose
-brew 'ripgrep' # fast grep
-brew 'asciinema' # terminal session recorder
-brew 'difftastic' # structural diff that understands syntax
-brew 'sesh' # tmux session manager with fzf
-#brew 'go' # golang
-brew 'micro' # better cli text editor
+# Minimal macOS terminal environment for the dotfiles.
+#
+# Keep this focused on dependencies used by the shell/Git/tmux/Micro setup.
+# Personal apps and language-specific development toolchains belong elsewhere.
 
-# Apps
-#cask 'obsidian'
-#cask 'spotify'
-#cask 'docker'
-cask 'beyond-compare' # compare files and folders in nice UI
-#cask 'sublime-text' # best text editor
+# Core shell / dotfile tooling
+brew 'git'
+brew 'wget'
+brew 'stow'
+brew 'tmux'
+brew 'micro'
+
+# Shell navigation / fuzzy search / file tools
+brew 'fzf'
+brew 'fd'
+brew 'ripgrep'
+brew 'eza'
+brew 'zoxide'
+brew 'bat'
+brew 'bat-extras' # various cli tools integrate with bat
+brew 'tldr'
+brew 'jq'
+brew 'jless'
+brew 'tree' # pretty-print directory contents
+brew 'fastfetch' # system info script
+
+# Prompt
+brew 'starship'
+
+# Git config dependencies
+brew 'git-delta'
+brew 'difftastic'
+
+# The tracked Git config contains Git LFS filters. Keeping git-lfs avoids
+# failures if this machine later opens a repository that uses LFS.
+brew 'git-lfs'
+
+# Terminal application
 cask 'iterm2'
-#cask 'raycast'
+
+# One Nerd Font is enough for Starship and tmux icon glyphs.
+cask 'font-fira-code-nerd-font'
 
 # Fonts
 cask 'font-0xproto-nerd-font'
