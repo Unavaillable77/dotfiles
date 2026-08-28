@@ -23,7 +23,7 @@ fi
 brew update
 
 # Install all our dependencies with bundle (See Brewfile)
-brew tap homebrew/bundle
+# brew tap homebrew/bundle # no longer needed
 brew bundle --file ./Brewfile
 
 # Check for Oh My Zsh and install if we don't have it
@@ -87,18 +87,18 @@ stow fastfetch
 stow starship
 stow btop
 stow lazydocker
-stow --adopt agents
+#stow --adopt agents
 
-# Symlink Claude Code skills to shared agent skills directory
-mkdir -p ~/.claude
-if [ -d ~/.claude/skills ] && [ ! -L ~/.claude/skills ]; then
-  mv ~/.claude/skills ~/.claude/skills.bak
-fi
-ln -sfn ~/.agents/skills ~/.claude/skills
-if [ -d ~/.claude/skills.bak ]; then
-  rsync -a ~/.claude/skills.bak/ ~/.agents/skills/
-  rm -rf ~/.claude/skills.bak
-fi
+## Symlink Claude Code skills to shared agent skills directory
+#mkdir -p ~/.claude
+#if [ -d ~/.claude/skills ] && [ ! -L ~/.claude/skills ]; then
+#  mv ~/.claude/skills ~/.claude/skills.bak
+#fi
+#ln -sfn ~/.agents/skills ~/.claude/skills
+#if [ -d ~/.claude/skills.bak ]; then
+#  rsync -a ~/.claude/skills.bak/ ~/.agents/skills/
+#  rm -rf ~/.claude/skills.bak
+#fi
 
 echo "Setting up iTerm2 preferences..."
 
