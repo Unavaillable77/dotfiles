@@ -23,7 +23,7 @@ brew 'starship' # cross-shell prompt
 brew 'git' # git version control (latest version)
 brew 'gnupg' # tool for managing pgp keys
 brew 'pinentry-mac' # tool that allow GnuPG to read passphrases
-brew 'rust' # rust (latest)
+#brew 'rust' # rust (latest)
 brew 'pyenv' # tool for Python version management
 brew 'pyenv-virtualenv' # pyenv plugin to manage virtualenv
 brew 'fastfetch' # system info script
@@ -34,7 +34,7 @@ brew 'ripgrep' # fast grep
 brew 'asciinema' # terminal session recorder
 brew 'difftastic' # structural diff that understands syntax
 brew 'sesh' # tmux session manager with fzf
-brew 'go' # golang
+#brew 'go' # golang
 
 # Apps
 #cask 'obsidian'

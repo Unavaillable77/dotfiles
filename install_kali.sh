@@ -3,17 +3,20 @@ set -Eeuo pipefail
 
 # Kali Linux bootstrap for guptarohit/dotfiles.
 #
+# Fresh-install focused:
+# - Installs only the tools needed for the shared terminal experience.
+# - Does not remove or clean up any previously installed packages.
+# - Avoids Cargo/Go compilation for optional tools.
+#
 # Usage:
-#   git clone https://github.com/guptarohit/dotfiles.git ~/.dotfiles
+#   git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
 #   cd ~/.dotfiles
-#   cp /path/to/install-kali.sh ./install-kali.sh
 #   chmod +x ./install-kali.sh
 #   ./install-kali.sh
 #
 # Optional environment variables:
 #   DOTFILES_DIR=~/.dotfiles    Override dotfiles location.
-#   ADOPT_AGENTS=1             Allow `stow --adopt agents`.
-#   INSTALL_GO_EXTRAS=1        Install sesh + lazydocker with Go (default: 1).
+#   INSTALL_VIM_PLUGINS=1      Install Vim plugins automatically (default: 0).
 
 log()  { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33mWARN:\033[0m %s\n' "$*" >&2; }
@@ -32,16 +35,15 @@ else
 fi
 
 DOTFILES_DIR="${DOTFILES_DIR:-$DEFAULT_DOTFILES_DIR}"
-ADOPT_AGENTS="${ADOPT_AGENTS:-0}"
-INSTALL_GO_EXTRAS="${INSTALL_GO_EXTRAS:-1}"
+INSTALL_VIM_PLUGINS="${INSTALL_VIM_PLUGINS:-0}"
 
 [[ "$(uname -s)" == "Linux" ]] || die "This installer is for Linux only."
-[[ -f /etc/debian_version ]] || die "This installer requires a Debian-family system such as Kali Linux."
+[[ -f /etc/debian_version ]] || die "This installer requires Kali/Debian or another Debian-family distribution."
 [[ -d "$DOTFILES_DIR" ]] || die "Dotfiles directory not found: $DOTFILES_DIR"
-[[ -d "$DOTFILES_DIR/zsh" ]] || die "This does not look like the guptarohit dotfiles repo: $DOTFILES_DIR"
+[[ -d "$DOTFILES_DIR/zsh" ]] || die "This does not look like the expected dotfiles repo: $DOTFILES_DIR"
 
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
-export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/go/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 SUDO=()
 
@@ -77,9 +79,10 @@ clone_or_pull() {
       return 1
     fi
 
-    git clone "$repo_url" "$directory"
+    git clone --depth 1 "$repo_url" "$directory"
   else
-    git -C "$directory" pull --ff-only
+    git -C "$directory" pull --ff-only ||
+      warn "Could not update $directory; keeping existing checkout."
   fi
 }
 
@@ -96,24 +99,8 @@ apt_install_available() {
   done
 
   if ((${#available[@]} > 0)); then
-    "${SUDO[@]}" apt-get install -y "${available[@]}"
+    "${SUDO[@]}" apt-get install -y --no-install-recommends "${available[@]}"
   fi
-}
-
-cargo_install_if_missing() {
-  local command_name="$1"
-  local crate="$2"
-
-  command_exists "$command_name" && return 0
-
-  if ! command_exists cargo; then
-    warn "cargo is unavailable; cannot install $command_name"
-    return 0
-  fi
-
-  log "Installing $command_name with Cargo"
-  cargo install "$crate" --locked ||
-    warn "Cargo install failed for $crate; continuing."
 }
 
 setup_packages() {
@@ -122,14 +109,11 @@ setup_packages() {
   log "Updating APT metadata"
   "${SUDO[@]}" apt-get update
 
-  log "Installing Kali/Debian packages"
+  log "Installing minimal Kali terminal packages"
   apt_install_available \
     zsh \
     git \
-    git-lfs \
     curl \
-    wget \
-    rsync \
     stow \
     tmux \
     vim \
@@ -138,31 +122,13 @@ setup_packages() {
     fd-find \
     ripgrep \
     jq \
-    tree \
-    htop \
-    btop \
-    httpie \
-    tldr \
     eza \
     zoxide \
-    gnupg \
-    pinentry-curses \
-    rustc \
-    cargo \
-    golang-go \
-    pyenv \
-    fastfetch \
-    lazygit \
-    asciinema \
-    difftastic \
-    bat-extras \
+    tldr \
     xdg-utils \
-    locales \
-    build-essential \
-    pkg-config \
-    libssl-dev
+    locales
 
-  # Debian-family distros sometimes expose these commands under different names.
+  # Debian/Kali may expose these under different executable names.
   if ! command_exists bat && command_exists batcat; then
     ln -sfn "$(command -v batcat)" "$HOME/.local/bin/bat"
   fi
@@ -171,71 +137,36 @@ setup_packages() {
     ln -sfn "$(command -v fdfind)" "$HOME/.local/bin/fd"
   fi
 
-  # Git config in the repo expects delta.
-  if ! command_exists delta; then
-    if apt-cache show git-delta >/dev/null 2>&1; then
-      "${SUDO[@]}" apt-get install -y git-delta
-    else
-      cargo_install_if_missing delta git-delta
-    fi
-  fi
-
-  # Fallbacks for tools that may not exist in the current Kali repositories.
-  cargo_install_if_missing starship starship
-  cargo_install_if_missing eza eza
-  cargo_install_if_missing zoxide zoxide
-  cargo_install_if_missing bat bat
-  cargo_install_if_missing fd fd-find
-  cargo_install_if_missing tldr tealdeer
-  cargo_install_if_missing difft difftastic
-  cargo_install_if_missing jless jless
-  cargo_install_if_missing git-absorb git-absorb
-
-  setup_pyenv
-  setup_go_extras
+  setup_starship
+  setup_git_delta
   setup_locale
 }
 
-setup_pyenv() {
-  if ! command_exists pyenv; then
-    log "Installing pyenv"
-    clone_or_pull https://github.com/pyenv/pyenv.git "$HOME/.pyenv"
+setup_starship() {
+  if command_exists starship; then
+    return 0
   fi
 
-  local pyenv_root="$HOME/.pyenv"
+  log "Installing Starship prebuilt binary"
 
-  if command_exists pyenv; then
-    pyenv_root="$(pyenv root 2>/dev/null || printf '%s' "$HOME/.pyenv")"
-  fi
+  curl -fsSL https://starship.rs/install.sh |
+    sh -s -- --yes --bin-dir "$HOME/.local/bin"
 
-  mkdir -p "$pyenv_root/plugins"
-
-  if [[ ! -d "$pyenv_root/plugins/pyenv-virtualenv/.git" ]]; then
-    log "Installing pyenv-virtualenv"
-    clone_or_pull \
-      https://github.com/pyenv/pyenv-virtualenv.git \
-      "$pyenv_root/plugins/pyenv-virtualenv" || true
-  else
-    git -C "$pyenv_root/plugins/pyenv-virtualenv" pull --ff-only || true
+  if ! command_exists starship; then
+    die "Starship installation failed."
   fi
 }
 
-setup_go_extras() {
-  [[ "$INSTALL_GO_EXTRAS" == "1" ]] || return 0
-  command_exists go || return 0
-
-  if ! command_exists sesh; then
-    log "Installing sesh"
-    GOBIN="$HOME/.local/bin" \
-      go install github.com/joshmedeski/sesh/v2@latest ||
-      warn "Could not install sesh"
+setup_git_delta() {
+  if command_exists delta; then
+    return 0
   fi
 
-  if ! command_exists lazydocker; then
-    log "Installing lazydocker"
-    GOBIN="$HOME/.local/bin" \
-      go install github.com/jesseduffield/lazydocker@latest ||
-      warn "Could not install lazydocker"
+  if apt-cache show git-delta >/dev/null 2>&1; then
+    log "Installing git-delta"
+    "${SUDO[@]}" apt-get install -y --no-install-recommends git-delta
+  else
+    warn "git-delta is unavailable via APT; Git will use the standard pager."
   fi
 }
 
@@ -246,6 +177,7 @@ setup_locale() {
 
   if [[ -f /etc/locale.gen ]]; then
     log "Generating en_US.UTF-8 locale"
+
     "${SUDO[@]}" sed -i \
       's/^# *\(en_US.UTF-8 UTF-8\)/\1/' \
       /etc/locale.gen
@@ -266,28 +198,46 @@ setup_local_overrides() {
 # macOS `open` equivalent.
 alias o='xdg-open'
 
+# Undo the upstream macOS-style `ip` alias so Kali's real `ip` command works.
+unalias ip 2>/dev/null || true
+
 # macOS `ipconfig getifaddr en0` equivalent.
 alias localip="hostname -I | awk '{print \$1}'"
 
-# Support pyenv when installed directly into ~/.pyenv.
-if [[ -d "$HOME/.pyenv" ]]; then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-fi
-
-# Replace the macOS browser path used by the shared dotfiles.
-if command -v chromium >/dev/null 2>&1; then
-  export CHROME_EXECUTABLE="$(command -v chromium)"
-elif command -v chromium-browser >/dev/null 2>&1; then
-  export CHROME_EXECUTABLE="$(command -v chromium-browser)"
-elif command -v google-chrome >/dev/null 2>&1; then
-  export CHROME_EXECUTABLE="$(command -v google-chrome)"
-else
-  unset CHROME_EXECUTABLE
-fi
+# The shared dotfiles may define a macOS browser executable.
+unset CHROME_EXECUTABLE
 
 # <<< Kali overrides <<<
 ZSHLOCAL
+  fi
+
+  # The upstream Git config enables commit signing.
+  # Keep a fresh Kali install usable before a GPG key is configured.
+  if ! grep -Fq '# >>> Kali Git overrides >>>' "$HOME/.gitconfig.local"; then
+    cat >> "$HOME/.gitconfig.local" <<'GITLOCAL'
+
+# >>> Kali Git overrides >>>
+[commit]
+    gpgsign = false
+# <<< Kali Git overrides <<<
+GITLOCAL
+  fi
+
+  # If git-delta is unavailable, override the shared pager config.
+  if ! command_exists delta &&
+     ! grep -Fq '# >>> Kali no-delta fallback >>>' "$HOME/.gitconfig.local"; then
+    cat >> "$HOME/.gitconfig.local" <<'GITDELTA'
+
+# >>> Kali no-delta fallback >>>
+[core]
+    pager = less -FRX
+[interactive]
+    diffFilter =
+[pager]
+    diff = less -FRX
+    show = less -FRX
+# <<< Kali no-delta fallback <<<
+GITDELTA
   fi
 }
 
@@ -316,10 +266,6 @@ setup_oh_my_zsh() {
   mkdir -p "$zsh_custom/plugins" "$zsh_custom/themes"
 
   log "Installing/updating Zsh plugins"
-
-  clone_or_pull \
-    https://github.com/Pilaton/OhMyZsh-full-autoupdate.git \
-    "$zsh_custom/plugins/ohmyzsh-full-autoupdate"
 
   clone_or_pull \
     https://github.com/MichaelAquilina/zsh-you-should-use.git \
@@ -355,23 +301,26 @@ setup_dotfiles() {
     git \
     fd \
     bat \
-    lazygit \
-    fastfetch \
-    starship \
-    btop \
-    lazydocker; do
+    starship; do
     stow_package "$package"
   done
 }
 
 setup_tmux() {
   log "Installing/updating tmux plugin manager"
+
   clone_or_pull \
     https://github.com/tmux-plugins/tpm \
     "$HOME/.tmux/plugins/tpm"
 }
 
 setup_vim() {
+  if [[ "$INSTALL_VIM_PLUGINS" != "1" ]]; then
+    log "Skipping Vim plugin download"
+    printf '%s\n' "Run this later if wanted: vim +PlugInstall +qall"
+    return 0
+  fi
+
   log "Installing Vim plugins"
 
   if ! vim +PlugInstall +qall; then
@@ -404,9 +353,7 @@ main() {
   log "Setup complete"
   printf '%s\n' "Open a new terminal, or run: exec zsh"
   printf '%s\n' "Inside tmux, install TPM plugins with: prefix + I"
-  printf '%s\n' "Note: the shared Git config enables GPG commit signing."
-  printf '%s\n' "Configure a signing key in ~/.gitconfig.local, or override signing there."
+  printf '%s\n' "Vim plugins are skipped by default to keep the install lightweight."
 }
 
 main "$@"
-
