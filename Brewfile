@@ -35,13 +35,14 @@ brew 'asciinema' # terminal session recorder
 brew 'difftastic' # structural diff that understands syntax
 brew 'sesh' # tmux session manager with fzf
 #brew 'go' # golang
+brew 'micro' # better cli text editor
 
 # Apps
 #cask 'obsidian'
 #cask 'spotify'
 #cask 'docker'
 cask 'beyond-compare' # compare files and folders in nice UI
-cask 'sublime-text' # best text editor
+#cask 'sublime-text' # best text editor
 cask 'iterm2'
 #cask 'raycast'
 

@@ -126,7 +126,8 @@ setup_packages() {
     zoxide \
     tldr \
     xdg-utils \
-    locales
+    locales \
+    micro
 
   # Debian/Kali may expose these under different executable names.
   if ! command_exists bat && command_exists batcat; then
