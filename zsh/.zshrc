@@ -47,7 +47,6 @@ ZSH_CONFIG_DIR="$HOME/.zsh.d"
 sources+="$ZSH_CONFIG_DIR/alias.zsh"
 sources+="$ZSH_CONFIG_DIR/exports.zsh"
 sources+="$ZSH_CONFIG_DIR/functions.zsh"
-sources+="$ZSH_CONFIG_DIR/private.zsh"
 
 for file in $sources[@]; do
     if [[ -a $file ]]; then

@@ -11,8 +11,8 @@ set -Eeuo pipefail
 # Usage:
 #   git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/.dotfiles
 #   cd ~/.dotfiles
-#   chmod +x ./install-kali.sh
-#   ./install-kali.sh
+#   chmod +x ./install_kali.sh
+#   ./install_kali.sh
 #
 # Optional environment variables:
 #   DOTFILES_DIR=~/.dotfiles    Override dotfiles location.
