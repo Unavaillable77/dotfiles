@@ -134,7 +134,9 @@ setup_packages() {
     micro \
     neovim \
     tree-sitter-cli \
-    xclip
+    xclip \
+    kitty \
+    fonts-hack
 
   # Debian/Kali may expose these under different executable names.
   if ! command_exists bat && command_exists batcat; then
@@ -311,7 +313,8 @@ setup_dotfiles() {
     neovim \
     fd \
     bat \
-    starship; do
+    starship \
+    kitty; do
     stow_package "$package"
   done
 }
