@@ -30,6 +30,7 @@ brew 'starship'
 # Git config dependencies
 brew 'git-delta'
 brew 'difftastic'
+brew 'lazygit' # TUI for git commands
 
 # The tracked Git config contains Git LFS filters. Keeping git-lfs avoids
 # failures if this machine later opens a repository that uses LFS.

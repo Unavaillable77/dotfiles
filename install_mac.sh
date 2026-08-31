@@ -195,6 +195,7 @@ setup_dotfiles() {
   for package in \
     tmux \
     git \
+    lazygit \
     fd \
     bat \
     iterm2 \

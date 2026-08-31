@@ -6,7 +6,9 @@ alias grep='grep --color=auto'
 alias ll='clear; eza -lh'
 alias l='ls -lshat'
 alias zrc='micro ~/.zshrc'
+alias sour='source ~/.zshrc'
 alias nano='micro'
+alias n='nvim'
 
 # IP addresses
 alias ip="dig +short myip.opendns.com @resolver1.opendns.com"

@@ -13,3 +13,6 @@ export PATH="$GOPATH/bin:$PATH"
 
 # User-installed binaries
 export PATH="$HOME/.local/bin:$PATH"
+
+# Tools
+export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"

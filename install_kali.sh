@@ -113,6 +113,7 @@ setup_packages() {
   apt_install_available \
     zsh \
     git \
+    lazygit \
     curl \
     stow \
     tmux \
@@ -300,6 +301,7 @@ setup_dotfiles() {
     tmux \
     vim \
     git \
+    lazygit \
     fd \
     bat \
     starship; do
