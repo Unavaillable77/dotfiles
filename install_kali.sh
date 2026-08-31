@@ -18,9 +18,12 @@ set -Eeuo pipefail
 #   DOTFILES_DIR=~/.dotfiles    Override dotfiles location.
 #   INSTALL_VIM_PLUGINS=1      Install Vim plugins automatically (default: 0).
 
-log()  { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
+log() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33mWARN:\033[0m %s\n' "$*" >&2; }
-die()  { printf '\033[1;31mERROR:\033[0m %s\n' "$*" >&2; exit 1; }
+die() {
+  printf '\033[1;31mERROR:\033[0m %s\n' "$*" >&2
+  exit 1
+}
 
 command_exists() {
   command -v "$1" >/dev/null 2>&1
@@ -128,7 +131,10 @@ setup_packages() {
     tldr \
     xdg-utils \
     locales \
-    micro
+    micro \
+    neovim \
+    tree-sitter-cli \
+    xclip
 
   # Debian/Kali may expose these under different executable names.
   if ! command_exists bat && command_exists batcat; then
@@ -193,7 +199,7 @@ setup_local_overrides() {
   touch "$HOME/.zshrc.local" "$HOME/.gitconfig.local" "$HOME/.vimrc.local"
 
   if ! grep -Fq '# >>> Kali overrides >>>' "$HOME/.zshrc.local"; then
-    cat >> "$HOME/.zshrc.local" <<'ZSHLOCAL'
+    cat >>"$HOME/.zshrc.local" <<'ZSHLOCAL'
 
 # >>> Kali overrides >>>
 
@@ -216,7 +222,7 @@ ZSHLOCAL
   # The upstream Git config enables commit signing.
   # Keep a fresh Kali install usable before a GPG key is configured.
   if ! grep -Fq '# >>> Kali Git overrides >>>' "$HOME/.gitconfig.local"; then
-    cat >> "$HOME/.gitconfig.local" <<'GITLOCAL'
+    cat >>"$HOME/.gitconfig.local" <<'GITLOCAL'
 
 # >>> Kali Git overrides >>>
 [commit]
@@ -227,8 +233,8 @@ GITLOCAL
 
   # If git-delta is unavailable, override the shared pager config.
   if ! command_exists delta &&
-     ! grep -Fq '# >>> Kali no-delta fallback >>>' "$HOME/.gitconfig.local"; then
-    cat >> "$HOME/.gitconfig.local" <<'GITDELTA'
+    ! grep -Fq '# >>> Kali no-delta fallback >>>' "$HOME/.gitconfig.local"; then
+    cat >>"$HOME/.gitconfig.local" <<'GITDELTA'
 
 # >>> Kali no-delta fallback >>>
 [core]
@@ -302,6 +308,7 @@ setup_dotfiles() {
     vim \
     git \
     lazygit \
+    neovim \
     fd \
     bat \
     starship; do

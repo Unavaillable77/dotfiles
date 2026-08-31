@@ -198,6 +198,7 @@ setup_dotfiles() {
     lazygit \
     fd \
     bat \
+    neovim \
     iterm2 \
     starship; do
     stow_package "$package"

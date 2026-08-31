@@ -9,6 +9,8 @@ brew 'wget'
 brew 'stow'
 brew 'tmux'
 brew 'micro'
+brew 'neovim'
+brew 'tree-sitter-cli'
 
 # Shell navigation / fuzzy search / file tools
 brew 'fzf'
