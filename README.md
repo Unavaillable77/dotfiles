@@ -1,10 +1,9 @@
 # Unavaillable77's Dotfiles
 
 My personal terminal and development setup for **macOS** and **Kali Linux**, managed with **GNU Stow**.
-
 ![iTerm2 setup screenshot](./.github/images/setup_screenshot.png)
 
-The setup is built around:
+## The setup is built around:
 - Zsh + Oh My Zsh
 - Starship
 - Tmux
@@ -14,8 +13,6 @@ The setup is built around:
 - Kitty on Kali Linux
 - Nerd Fonts
 - Git, bat, fd, fzf, ripgrep, zoxide and other CLI tools
-
-![Terminal setup](./.github/images/setup_screenshot.png)
 
 ## Highlights
 - Shared terminal environment across macOS and Kali Linux
