@@ -200,7 +200,8 @@ setup_dotfiles() {
     bat \
     neovim \
     iterm2 \
-    starship; do
+    starship \
+    fastfetch; do
     stow_package "$package"
   done
 }

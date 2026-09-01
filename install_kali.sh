@@ -136,7 +136,8 @@ setup_packages() {
     tree-sitter-cli \
     xclip \
     kitty \
-    fonts-hack
+    fonts-hack \
+    fastfetch
 
   # Debian/Kali may expose these under different executable names.
   if ! command_exists bat && command_exists batcat; then
@@ -318,7 +319,8 @@ setup_dotfiles() {
     fd \
     bat \
     starship \
-    kitty; do
+    kitty \
+    fastfetch; do
     stow_package "$package"
   done
 }
