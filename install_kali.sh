@@ -217,6 +217,10 @@ alias localip="hostname -I | awk '{print \$1}'"
 # The shared dotfiles may define a macOS browser executable.
 unset CHROME_EXECUTABLE
 
+# Source fzf history and completion
+[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+[ -f /usr/share/doc/fzf/examples/completion.zsh ] && source /usr/share/doc/fzf/examples/completion.zsh
+
 # <<< Kali overrides <<<
 ZSHLOCAL
   fi

@@ -16,3 +16,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Tools
 export LG_CONFIG_FILE="$HOME/.config/lazygit/config.yml"
+
+## Modern fzf floating layout
+export FZF_DEFAULT_OPTS="--height 40% --border --inline-info"
+export FZF_CTRL_R_OPTS="--sort --exact"

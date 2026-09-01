@@ -8,6 +8,7 @@ KeybdPrefs_.*.png
 Safari_.*.png
 README.*
 TODO.*
+^TMUX_WORKFLOW\.md$
 RCS
 .*.secrets.*
 .gitconfig.local

@@ -3,8 +3,8 @@
 alias wttr='curl wttr.in/'
 alias dotfiles='cd ~/.dotfiles'
 alias grep='grep --color=auto'
-alias ll='clear; eza -lh'
-alias l='ls -lshat'
+alias ll='clear; eza -lhar --smart-group --sort changed'
+alias l='clear; eza -lh'
 alias zrc='micro ~/.zshrc'
 alias sour='source ~/.zshrc'
 alias nano='micro'
@@ -29,3 +29,11 @@ command -v fastfetch >/dev/null 2>&1 && alias fastfetch="fastfetch --logo-type f
 
 # Download file and save it with filename of remote file
 alias download="curl -O -L"
+
+# Source fzf history and completion
+[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ] && source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
+[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ] && source /usr/local/opt/fzf/shell/key-bindings.zsh
+
+# Bind Up and Down arrows to fzf history search
+bindkey '^[[A' fzf-history-widget
+bindkey '^[OA' fzf-history-widget
